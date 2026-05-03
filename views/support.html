@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apoyar a la Causa - Felinoo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles/style.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <img src="/img/Logo.png" alt="Logo Felinoo">
+            <span>Felinoo</span>
+        </div>
+        <nav>
+            <a href="/">Inicio</a>
+            <a href="/adopt">Adoptar</a>
+            <a href="/support">Apoyar a la causa</a>
+            <div class="auth-buttons">
+                <a href="/login" class="btn btn-outline">Iniciar Sesión</a>
+                <a href="/register" class="btn btn-primary">Registrarse</a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="support-section">
+        <div class="support-container">
+            <div class="support-text">
+                <h2>Transforma Vidas Felinas 🐾</h2>
+                <p>Tu donativo nos permite rescatar, curar y alimentar a gatitos en situación de calle mientras encuentran un hogar lleno de amor. Cada aporte cuenta y hace una gran diferencia.</p>
+                <div class="impact-stats">
+                    <div class="stat">
+                        <h3>$5</h3>
+                        <p>Alimenta a un gatito por una semana.</p>
+                    </div>
+                    <div class="stat">
+                        <h3>$20</h3>
+                        <p>Cubre vacunas y desparasitación.</p>
+                    </div>
+                    <div class="stat">
+                        <h3>$50</h3>
+                        <p>Ayuda en tratamientos médicos urgentes.</p>
+                    </div>
+                </div>
+                <img src="https://images.unsplash.com/photo-1615266895738-11f1371cd7e5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Gatito rescatado" class="support-img">
+            </div>
+            <div class="support-form-card">
+                <h3>Haz tu donativo</h3>
+                <form id="donationForm">
+                    <div class="form-group">
+                        <label>Selecciona un monto a donar:</label>
+                        <div class="donation-amounts">
+                            <label class="amount-btn">
+                                <input type="radio" name="amount" value="5">
+                                <span>$5</span>
+                            </label>
+                            <label class="amount-btn">
+                                <input type="radio" name="amount" value="10">
+                                <span>$10</span>
+                            </label>
+                            <label class="amount-btn">
+                                <input type="radio" name="amount" value="20" checked>
+                                <span>$20</span>
+                            </label>
+                            <label class="amount-btn">
+                                <input type="radio" name="amount" value="50">
+                                <span>$50</span>
+                            </label>
+                            <label class="amount-btn custom">
+                                <input type="radio" name="amount" value="custom">
+                                <span>Otro</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group custom-amount-group" id="customAmountGroup" style="display:none;">
+                        <label for="customAmount">Monto personalizado ($)</label>
+                        <input type="number" id="customAmount" name="customAmount" min="1" placeholder="Ej: 15">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="donorName">Nombre completo</label>
+                        <input type="text" id="donorName" name="donorName" required placeholder="Tu nombre">
+                    </div>
+                    <div class="form-group">
+                        <label for="donorEmail">Correo electrónico</label>
+                        <input type="email" id="donorEmail" name="donorEmail" required placeholder="tu@correo.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Método de pago:</label>
+                        <div class="payment-methods">
+                            <label class="payment-method">
+                                <input type="radio" name="payment" value="card" checked>
+                                <span>💳 Tarjeta</span>
+                            </label>
+                            <label class="payment-method">
+                                <input type="radio" name="payment" value="paypal">
+                                <span>🅿️ PayPal</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-full btn-large" style="margin-top: 15px;">Donar Ahora</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Felinoo. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="/js/main.js"></script>
+</body>
+</html>

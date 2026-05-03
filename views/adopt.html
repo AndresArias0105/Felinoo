@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adoptar - Felinoo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles/style.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <img src="/img/Logo.png" alt="Logo Felinoo">
+            <span>Felinoo</span>
+        </div>
+        <nav>
+            <a href="/">Inicio</a>
+            <a href="/adopt">Adoptar</a>
+            <a href="/support">Apoyar a la causa</a>
+            <div class="auth-buttons">
+                <a href="/login" class="btn btn-outline">Iniciar Sesión</a>
+                <a href="/register" class="btn btn-primary">Registrarse</a>
+            </div>
+        </nav>
+    </header>
+
+    <section id="adopt" class="adopt-section">
+        <div class="section-header">
+            <h2>Gatitos esperando un hogar</h2>
+            <p>Conoce a estos adorables michis. Cada uno tiene una personalidad única y mucho amor para dar.</p>
+        </div>
+        
+        <div class="cats-grid" id="catsGrid">
+            <div class="cat-card">
+                <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Luna">
+                <div class="cat-info">
+                    <h3>Luna</h3>
+                    <p class="cat-age">3 meses</p>
+                    <p class="cat-desc">Juguetona y muy cariñosa. Le encanta dormir en tus piernas.</p>
+                    <button class="btn btn-primary btn-full" onclick="alert('¡Gracias por tu interés en Luna! Por favor regístrate para iniciar el proceso.')">Adoptar a Luna</button>
+                </div>
+            </div>
+            
+            <div class="cat-card">
+                <img src="https://images.unsplash.com/photo-1573865526739-10659fec78a5?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Simba">
+                <div class="cat-info">
+                    <h3>Simba</h3>
+                    <p class="cat-age">1 año</p>
+                    <p class="cat-desc">Tranquilo, explorador y siempre listo para la hora de comer.</p>
+                    <button class="btn btn-primary btn-full" onclick="alert('¡Gracias por tu interés en Simba! Por favor regístrate para iniciar el proceso.')">Adoptar a Simba</button>
+                </div>
+            </div>
+
+            <div class="cat-card">
+                <img src="https://images.unsplash.com/photo-1513360371669-4adf3dd7dff8?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Milo">
+                <div class="cat-info">
+                    <h3>Milo</h3>
+                    <p class="cat-age">2 meses</p>
+                    <p class="cat-desc">Una bolita de energía que te hará reír todos los días.</p>
+                    <button class="btn btn-primary btn-full" onclick="alert('¡Gracias por tu interés en Milo! Por favor regístrate para iniciar el proceso.')">Adoptar a Milo</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Felinoo. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="/js/main.js"></script>
+</body>
+</html>
