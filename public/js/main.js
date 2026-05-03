@@ -143,7 +143,44 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    const paymentRadios = document.querySelectorAll('input[name="payment"]');
+    const cardDetailsGroup = document.getElementById('cardDetailsGroup');
+    const paypalDetailsGroup = document.getElementById('paypalDetailsGroup');
+    const cardNumber = document.getElementById('cardNumber');
+    const cardExpiry = document.getElementById('cardExpiry');
+    const cardCvc = document.getElementById('cardCvc');
+    const paypalEmail = document.getElementById('paypalEmail');
+
+    if (paymentRadios.length > 0) {
+        paymentRadios.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                if (e.target.value === 'card') {
+                    if (cardDetailsGroup) cardDetailsGroup.style.display = 'block';
+                    if (paypalDetailsGroup) paypalDetailsGroup.style.display = 'none';
+                    if (cardNumber) cardNumber.required = true;
+                    if (cardExpiry) cardExpiry.required = true;
+                    if (cardCvc) cardCvc.required = true;
+                    if (paypalEmail) paypalEmail.required = false;
+                } else {
+                    if (cardDetailsGroup) cardDetailsGroup.style.display = 'none';
+                    if (paypalDetailsGroup) paypalDetailsGroup.style.display = 'block';
+                    if (cardNumber) cardNumber.required = false;
+                    if (cardExpiry) cardExpiry.required = false;
+                    if (cardCvc) cardCvc.required = false;
+                    if (paypalEmail) paypalEmail.required = true;
+                }
+            });
+        });
+    }
+
     if (donationForm) {
+        const donorNameInput = document.getElementById('donorName');
+        const user = localStorage.getItem('felinoo_user');
+        
+        if (user && donorNameInput) {
+            donorNameInput.value = user;
+        }
+
         donationForm.addEventListener('submit', (e) => {
             e.preventDefault();
             
@@ -154,23 +191,52 @@ document.addEventListener('DOMContentLoaded', () => {
                 finalAmount = document.getElementById('customAmount').value;
             }
             
-            const name = document.getElementById('donorName').value;
+            const name = donorNameInput.value;
             const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
             
-            const paymentText = paymentMethod === 'card' ? 'Tarjeta de Crédito/Débito' : 'PayPal';
+            let paymentText = 'PayPal';
+            if (paymentMethod === 'card') {
+                const cardNum = cardNumber ? cardNumber.value : '';
+                const last4 = cardNum.slice(-4) || '****';
+                paymentText = `Tarjeta terminada en ${last4}`;
+            }
             
             Swal.fire({
-                title: '¡Donación Iniciada!',
-                text: `¡Gracias ${name} por tu generosa donación de $${finalAmount}!\nSerás redirigido a la plataforma de pago (${paymentText}).`,
-                icon: 'success',
-                confirmButtonColor: '#AED4BD'
+                title: 'Procesando Donación...',
+                html: `Conectando de forma segura con ${paymentMethod === 'card' ? 'el banco' : 'PayPal'}...`,
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
             });
-            
-            donationForm.reset();
-            customAmountGroup.style.display = 'none';
-            customAmountInput.required = false;
-            const defaultRadio = document.querySelector('input[name="amount"][value="20"]');
-            if (defaultRadio) defaultRadio.checked = true;
+
+            setTimeout(() => {
+                Swal.fire({
+                    title: '¡Donación Exitosa!',
+                    text: `¡Mil gracias ${name} por tu donación de $${finalAmount}! Este dinero irá directamente al cuidado y rescate de nuestros gatitos.`,
+                    icon: 'success',
+                    confirmButtonColor: '#AED4BD'
+                });
+                
+                donationForm.reset();
+                customAmountGroup.style.display = 'none';
+                customAmountInput.required = false;
+                
+                // Reset to default payment
+                if (cardDetailsGroup) cardDetailsGroup.style.display = 'block';
+                if (paypalDetailsGroup) paypalDetailsGroup.style.display = 'none';
+                if (cardNumber) cardNumber.required = true;
+                if (cardExpiry) cardExpiry.required = true;
+                if (cardCvc) cardCvc.required = true;
+                if (paypalEmail) paypalEmail.required = false;
+
+                const defaultRadio = document.querySelector('input[name="amount"][value="20"]');
+                if (defaultRadio) defaultRadio.checked = true;
+                const defaultPayment = document.querySelector('input[name="payment"][value="card"]');
+                if (defaultPayment) defaultPayment.checked = true;
+
+                if (user && donorNameInput) donorNameInput.value = user; // keep it filled
+            }, 2000);
         });
     }
 
