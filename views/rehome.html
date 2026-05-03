@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dar en Adopción - Felinoo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles/style.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <img src="/img/Logo.png" alt="Logo Felinoo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/616/616430.png'">
+            <span>Felinoo</span>
+        </div>
+        <nav>
+            <a href="/">Inicio</a>
+            <a href="/adopt">Adoptar</a>
+            <a href="/rehome" class="active-nav">Dar en adopción</a>
+            <a href="/support">Apoyar a la causa</a>
+            <div class="auth-buttons">
+                <a href="/login" class="btn btn-outline">Iniciar Sesión</a>
+                <a href="/register" class="btn btn-primary">Registrarse</a>
+            </div>
+            <div class="user-menu" id="userMenu" style="display: none;">
+                <button class="btn btn-outline" id="userDropdownBtn" style="display: flex; align-items: center; gap: 8px;">
+                    <img src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png" width="18" height="18" alt="user" style="opacity: 0.7;">
+                    <span id="navUsername">Usuario</span>
+                </button>
+                <div class="dropdown-content" id="userDropdownContent">
+                    <a href="#" id="logoutBtn">Cerrar Sesión</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <section class="rehome-section">
+        <div class="rehome-container">
+            <div class="rehome-text">
+                <h2>Encuéntrale un Hogar 🐾</h2>
+                <p>Sabemos que es una decisión difícil. Si no puedes seguir cuidando de tu gatito o rescataste a uno de la calle, nosotros te ayudamos a encontrarle una familia responsable y amorosa.</p>
+                <img src="https://images.unsplash.com/photo-1511044568932-338cba0ad803?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Gatito buscando hogar" class="rehome-hero-img">
+            </div>
+            
+            <div class="rehome-form-card">
+                <h3>Formulario de Solicitud</h3>
+                <p class="section-subtitle">Por favor, llena los datos. Tu solicitud quedará en espera de aprobación por nuestro equipo.</p>
+                <form id="rehomeForm">
+                    <!-- Step 1: Datos Personales -->
+                    <div id="step1">
+                        <div class="form-card-section">
+                            <h4 class="form-section-title">Paso 1: Tus Datos Personales</h4>
+                            <div class="form-group">
+                                <label for="ownerName">Nombre completo</label>
+                                <input type="text" id="ownerName" required placeholder="Ej: María Pérez">
+                            </div>
+                            <div class="form-group">
+                                <label for="ownerPhone">Teléfono de contacto</label>
+                                <input type="tel" id="ownerPhone" required placeholder="Ej: +56 9 1234 5678">
+                            </div>
+                            <div class="form-group">
+                                <label for="ownerEmail">Correo electrónico</label>
+                                <input type="email" id="ownerEmail" required placeholder="tu@correo.com">
+                            </div>
+                        </div>
+                        <button type="button" id="nextBtn" class="btn btn-primary btn-full btn-large submit-btn">Siguiente</button>
+                    </div>
+
+                    <!-- Step 2: Datos del Gatito -->
+                    <div id="step2" style="display: none;">
+                        <div class="form-card-section">
+                            <h4 class="form-section-title">Paso 2: Datos del Gatito</h4>
+                            <div class="form-group">
+                                <label for="catName">Nombre del gatito</label>
+                                <input type="text" id="catName" required placeholder="Ej: Michi">
+                            </div>
+                            <div class="form-group">
+                                <label for="catAge">Edad aproximada</label>
+                                <input type="text" id="catAge" required placeholder="Ej: 3 meses / 2 años">
+                            </div>
+                            <div class="form-group">
+                                <label for="catDesc">Descripción y personalidad</label>
+                                <textarea id="catDesc" required placeholder="Cuéntanos sobre su comportamiento, vacunas, etc." style="resize: vertical; min-height: 80px;"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="catPhotoFile">Foto del gatito</label>
+                                <input type="file" id="catPhotoFile" accept="image/*" class="file-input">
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 15px; margin-top: 15px;">
+                            <button type="button" id="prevBtn" class="btn btn-outline btn-full btn-large">Atrás</button>
+                            <button type="submit" class="btn btn-primary btn-full btn-large">Enviar Solicitud</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Felinoo. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/js/main.js"></script>
+</body>
+</html>

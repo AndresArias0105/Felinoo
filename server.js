@@ -8,7 +8,6 @@ const server = http.createServer((req, res) => {
     let filePath = '';
     let contentType = 'text/html';
 
-    // Manejo de rutas
     if (req.url === '/' || req.url === '/index') {
         filePath = path.join(__dirname, 'views', 'index.html');
     } else if (req.url === '/login') {
@@ -19,11 +18,11 @@ const server = http.createServer((req, res) => {
         filePath = path.join(__dirname, 'views', 'adopt.html');
     } else if (req.url === '/support') {
         filePath = path.join(__dirname, 'views', 'support.html');
+    } else if (req.url === '/rehome') {
+        filePath = path.join(__dirname, 'views', 'rehome.html');
     } else if (req.url.startsWith('/styles/') || req.url.startsWith('/js/') || req.url.startsWith('/img/') || req.url.startsWith('/assets/')) {
-        // Archivos estáticos en la carpeta public
         filePath = path.join(__dirname, 'public', req.url);
         
-        // Determinar Content-Type correcto
         const extname = path.extname(filePath);
         switch (extname) {
             case '.js':
@@ -44,11 +43,9 @@ const server = http.createServer((req, res) => {
                 break;
         }
     } else {
-        // Archivo no encontrado (por defecto intenta buscar en views)
         filePath = path.join(__dirname, 'views', req.url + '.html');
     }
 
-    // Leer y servir el archivo
     fs.readFile(filePath, (err, content) => {
         if (err) {
             if (err.code === 'ENOENT') {

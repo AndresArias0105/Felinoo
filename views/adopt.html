@@ -16,11 +16,21 @@
         </div>
         <nav>
             <a href="/">Inicio</a>
-            <a href="/adopt">Adoptar</a>
+            <a href="/adopt" class="active-nav">Adoptar</a>
+            <a href="/rehome">Dar en adopción</a>
             <a href="/support">Apoyar a la causa</a>
             <div class="auth-buttons">
                 <a href="/login" class="btn btn-outline">Iniciar Sesión</a>
                 <a href="/register" class="btn btn-primary">Registrarse</a>
+            </div>
+            <div class="user-menu" id="userMenu" style="display: none;">
+                <button class="btn btn-outline" id="userDropdownBtn" style="display: flex; align-items: center; gap: 8px;">
+                    <img src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png" width="18" height="18" alt="user" style="opacity: 0.7;">
+                    <span id="navUsername">Usuario</span>
+                </button>
+                <div class="dropdown-content" id="userDropdownContent">
+                    <a href="#" id="logoutBtn">Cerrar Sesión</a>
+                </div>
             </div>
         </nav>
     </header>
@@ -38,7 +48,7 @@
                     <h3>Luna</h3>
                     <p class="cat-age">3 meses</p>
                     <p class="cat-desc">Juguetona y muy cariñosa. Le encanta dormir en tus piernas.</p>
-                    <button class="btn btn-primary btn-full" onclick="alert('¡Gracias por tu interés en Luna! Por favor regístrate para iniciar el proceso.')">Adoptar a Luna</button>
+                    <button class="btn btn-primary btn-full adopt-btn" data-cat-name="Luna">Adoptar a Luna</button>
                 </div>
             </div>
             
@@ -48,7 +58,7 @@
                     <h3>Simba</h3>
                     <p class="cat-age">1 año</p>
                     <p class="cat-desc">Tranquilo, explorador y siempre listo para la hora de comer.</p>
-                    <button class="btn btn-primary btn-full" onclick="alert('¡Gracias por tu interés en Simba! Por favor regístrate para iniciar el proceso.')">Adoptar a Simba</button>
+                    <button class="btn btn-primary btn-full adopt-btn" data-cat-name="Simba">Adoptar a Simba</button>
                 </div>
             </div>
 
@@ -58,7 +68,7 @@
                     <h3>Milo</h3>
                     <p class="cat-age">2 meses</p>
                     <p class="cat-desc">Una bolita de energía que te hará reír todos los días.</p>
-                    <button class="btn btn-primary btn-full" onclick="alert('¡Gracias por tu interés en Milo! Por favor regístrate para iniciar el proceso.')">Adoptar a Milo</button>
+                    <button class="btn btn-primary btn-full adopt-btn" data-cat-name="Milo">Adoptar a Milo</button>
                 </div>
             </div>
         </div>
@@ -68,6 +78,7 @@
         <p>&copy; 2026 Felinoo. Todos los derechos reservados.</p>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/js/main.js"></script>
 </body>
 </html>

@@ -1,0 +1,75 @@
+# Arquitectura de Base de Datos y Backend para Felinoo
+
+Para transformar "Felinoo" de un prototipo estático (Front-end) a una aplicación web completa y funcional con persistencia de datos (Full-stack), necesitarás integrar una Base de Datos (como PostgreSQL o MySQL) y expandir tu servidor Node.js. 
+
+A continuación, te detallo la estructura ideal y los cambios lógicos necesarios.
+
+## 1. Estructura de Tablas y Columnas (Diseño Relacional)
+
+### Tabla: `usuarios` (users)
+Almacena la información de las personas registradas.
+* `id` (Primary Key, UUID o entero autoincremental)
+* `nombre_completo` (VARCHAR)
+* `email` (VARCHAR, Único)
+* `telefono` (VARCHAR)
+* `username` (VARCHAR, Único)
+* `password_hash` (VARCHAR) - *Nunca guardes contraseñas en texto plano; usa librerías como bcrypt.*
+* `rol` (ENUM: 'usuario', 'admin') - *Útil para el panel de administración.*
+* `fecha_creacion` (TIMESTAMP)
+
+### Tabla: `gatos` (cats)
+Almacena el inventario de gatitos que el sistema conoce.
+* `id` (Primary Key)
+* `nombre` (VARCHAR)
+* `edad` (VARCHAR)
+* `descripcion` (TEXT)
+* `imagen_url` (VARCHAR) - *Ruta del archivo de la foto guardada en el servidor.*
+* `estado` (ENUM: 'disponible', 'en_proceso', 'adoptado')
+* `fecha_creacion` (TIMESTAMP)
+
+### Tabla: `solicitudes_adopcion` (adoption_requests)
+Registra cuando un usuario quiere adoptar a un gato en específico (Relación Muchos a Muchos).
+* `id` (Primary Key)
+* `usuario_id` (Foreign Key -> usuarios.id)
+* `gato_id` (Foreign Key -> gatos.id)
+* `estado` (ENUM: 'pendiente', 'aprobada', 'rechazada')
+* `fecha_solicitud` (TIMESTAMP)
+
+### Tabla: `solicitudes_reubicacion` (rehome_requests)
+Registra el formulario de "Dar en adopción" enviado por un usuario.
+* `id` (Primary Key)
+* `usuario_id` (Foreign Key -> usuarios.id)
+* `nombre_gato` (VARCHAR)
+* `edad_gato` (VARCHAR)
+* `descripcion_gato` (TEXT)
+* `foto_gato_url` (VARCHAR)
+* `estado` (ENUM: 'pendiente', 'aprobada', 'rechazada') - *Si se aprueba, un administrador podría convertir esto en un registro en la tabla `gatos`.*
+* `fecha_solicitud` (TIMESTAMP)
+
+### Tabla: `donaciones` (donations)
+Mantiene un historial del apoyo económico.
+* `id` (Primary Key)
+* `usuario_id` (Foreign Key -> usuarios.id) - *Puede ser NULO si permites donaciones anónimas.*
+* `monto` (DECIMAL)
+* `metodo_pago` (VARCHAR)
+* `fecha_donacion` (TIMESTAMP)
+
+---
+
+## 2. Cambios en la Lógica del Proyecto
+
+Actualmente tu proyecto funciona simulando el comportamiento a través del navegador (con `main.js` y `localStorage`). Para usar la base de datos, el flujo debe cambiar al modelo **Cliente-Servidor**.
+
+### A. El Servidor (Backend)
+Tu archivo actual `server.js` es un servidor HTTP muy básico. Deberías migrarlo a usar un Framework como **Express.js**.
+* **Creación de APIs:** Deberás crear "Rutas" o "Endpoints" (ej. `POST /api/login`, `GET /api/gatos`, `POST /api/adoptar`).
+* **Conexión a la DB:** Usarás librerías como `pg` (para PostgreSQL) o ORMs como `Sequelize` o `Prisma` para que tu servidor hable con la base de datos.
+* **Procesamiento de Archivos:** Para el formulario de "Dar en adopción", necesitarás procesar la subida real de la imagen usando herramientas como `multer` y guardarla en una carpeta de tu servidor o en la nube (AWS S3), para luego guardar solo su *URL* en la base de datos.
+
+### B. El Cliente (Frontend / `main.js`)
+* **Peticiones HTTP (`fetch`):** En lugar de que `main.js` solo intercepte el formulario y muestre un SweetAlert, deberá enviar los datos recolectados al servidor usando `fetch()` o `axios`.
+  * *Ejemplo de Login:* El frontend envía el usuario y contraseña al backend. El backend verifica la base de datos. Si es correcto, devuelve un "token".
+* **Autenticación Real (JWT o Cookies):** Reemplazarás `localStorage.setItem('felinoo_user', ...)` por un sistema de seguridad real. El servidor generará un **JSON Web Token (JWT)** o una **Cookie segura** que tu navegador enviará en cada petición futura para demostrar quién eres.
+* **Renderizado Dinámico:**
+  * En `adopt.html`, borrarás el código HTML "duro" de los gatos (Milo, Simba, Luna). 
+  * En su lugar, cuando la página cargue, `main.js` hará un `fetch('/api/gatos')` para pedir la lista real de la base de datos, y construirá las tarjetas (`<div class="cat-card">`) mediante Javascript. De esta forma, si agregas un gato nuevo en la DB, aparecerá en la web automáticamente.
