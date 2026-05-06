@@ -1,67 +1,25 @@
-const http = require('http');
-const fs = require('fs');
+const express = require('express');
+const app = express();
+const cors = require('cors');
 const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
+const session = require('express-session');
 
-const PORT = 3000;
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static('public'));
+app.use(session({
+    secret: 'secret-key',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false } 
+}));
 
-const server = http.createServer((req, res) => {
-    let filePath = '';
-    let contentType = 'text/html';
-
-    if (req.url === '/' || req.url === '/index') {
-        filePath = path.join(__dirname, 'views', 'index.html');
-    } else if (req.url === '/login') {
-        filePath = path.join(__dirname, 'views', 'login.html');
-    } else if (req.url === '/register') {
-        filePath = path.join(__dirname, 'views', 'register.html');
-    } else if (req.url === '/adopt') {
-        filePath = path.join(__dirname, 'views', 'adopt.html');
-    } else if (req.url === '/support') {
-        filePath = path.join(__dirname, 'views', 'support.html');
-    } else if (req.url === '/rehome') {
-        filePath = path.join(__dirname, 'views', 'rehome.html');
-    } else if (req.url.startsWith('/styles/') || req.url.startsWith('/js/') || req.url.startsWith('/img/') || req.url.startsWith('/assets/')) {
-        filePath = path.join(__dirname, 'public', req.url);
-        
-        const extname = path.extname(filePath);
-        switch (extname) {
-            case '.js':
-                contentType = 'text/javascript';
-                break;
-            case '.css':
-                contentType = 'text/css';
-                break;
-            case '.json':
-                contentType = 'application/json';
-                break;
-            case '.png':
-                contentType = 'image/png';
-                break;
-            case '.jpg':
-            case '.jpeg':
-                contentType = 'image/jpg';
-                break;
-        }
-    } else {
-        filePath = path.join(__dirname, 'views', req.url + '.html');
-    }
-
-    fs.readFile(filePath, (err, content) => {
-        if (err) {
-            if (err.code === 'ENOENT') {
-                res.writeHead(404, { 'Content-Type': 'text/html' });
-                res.end('<h1>404 - Página no encontrada</h1>', 'utf-8');
-            } else {
-                res.writeHead(500);
-                res.end(`Error del servidor: ${err.code}`);
-            }
-        } else {
-            res.writeHead(200, { 'Content-Type': contentType });
-            res.end(content, 'utf-8');
-        }
-    });
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'login.html'));
 });
 
-server.listen(PORT, () => {
-    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+app.listen(3000, () => {
+    console.log('Server is running on port 3000: http://localhost:3000');
 });
