@@ -15,7 +15,8 @@ const catModel ={
 
     createCat: (name, age, description, img_url) => {
         return new Promise((resolve, reject) => {
-            pool.query('INSERT INTO cats (name, age, description, img_url) VALUES ($1, $2, $3, $4) RETURNING *', [name, age, description, img_url], (error, results) => {
+            // Usamos el orden exacto de las columnas: id_cat, name, age, description, img_url, estado, created_at
+            pool.query('INSERT INTO cats VALUES (DEFAULT, $1, $2, $3, $4, \'disponible\', DEFAULT) RETURNING *', [name, age, description, img_url], (error, results) => {
                 if (error) {
                     reject(error);
                 } else {

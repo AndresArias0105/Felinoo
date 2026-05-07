@@ -46,18 +46,18 @@
             <div class="rehome-form-card">
                 <h3>Formulario de Solicitud</h3>
                 <p class="section-subtitle">Por favor, llena los datos. Tu solicitud quedará en espera de aprobación por nuestro equipo.</p>
-                <form id="rehomeForm">
-                    <!-- Step 1: Datos Personales -->
+                <form id="rehomeForm" enctype="multipart/form-data">
+
                     <div id="step1">
                         <div class="form-card-section">
                             <h4 class="form-section-title">Paso 1: Tus Datos Personales</h4>
                             <div class="form-group">
                                 <label for="ownerName">Nombre completo</label>
-                                <input type="text" id="ownerName" required placeholder="Ej: María Pérez">
+                                <input type="text" oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, '');" id="ownerName" required placeholder="Ej: María Pérez">
                             </div>
                             <div class="form-group">
                                 <label for="ownerPhone">Teléfono de contacto</label>
-                                <input type="tel" id="ownerPhone" required placeholder="Ej: +56 9 1234 5678">
+                                <input type="number" maxlength="15" oninput="if(this.value.length > 15) this.value = this.value.slice(0, 15);" id="ownerPhone" required placeholder="Ej: +56 9 1234 5678">
                             </div>
                             <div class="form-group">
                                 <label for="ownerEmail">Correo electrónico</label>
@@ -73,7 +73,7 @@
                             <h4 class="form-section-title">Paso 2: Datos del Gatito</h4>
                             <div class="form-group">
                                 <label for="catName">Nombre del gatito</label>
-                                <input type="text" id="catName" required placeholder="Ej: Michi">
+                                <input type="text" oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, '');" id="catName" required placeholder="Ej: Michi">
                             </div>
                             <div class="form-group">
                                 <label for="catAge">Edad aproximada</label>
@@ -105,5 +105,63 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/js/main.js"></script>
+    <script>
+        document.getElementById('rehomeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Mostrar estado de carga
+            Swal.fire({
+                title: 'Subiendo información...',
+                text: 'Estamos enviando la foto a Cloudinary',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            const formData = new FormData();
+            formData.append('name', document.getElementById('catName').value);
+            formData.append('age', document.getElementById('catAge').value);
+            formData.append('description', document.getElementById('catDesc').value);
+            
+            const fotoFile = document.getElementById('catPhotoFile').files[0];
+            if (fotoFile) {
+                formData.append('foto-gato', fotoFile);
+            }
+
+            try {
+                const response = await fetch('/api/cats/admin/nuevo-gato', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Publicado!',
+                        text: 'El gatito se ha registrado correctamente.',
+                        footer: `<a href="${result.gato.img_url}" target="_blank">Ver foto en Cloudinary</a>`
+                    });
+                    // Opcional: resetear formulario o redirigir
+                    // document.getElementById('rehomeForm').reset();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: result.message || 'No se pudo subir la imagen'
+                    });
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de red',
+                    text: 'No se pudo conectar con el servidor'
+                });
+            }
+        });
+    </script>
 </body>
 </html>
