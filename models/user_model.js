@@ -36,6 +36,19 @@ const userModel = {
             });
         });
     },
+
+    userLogin : (username, password) => {
+        return new Promise((resolve, reject) => {
+            pool.query('SELECT * FROM users WHERE username = $1 AND password = $2', [username, password], (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(results.rows[0]);
+                }
+            });
+        });
+    },
+
 };
 
 module.exports = userModel;

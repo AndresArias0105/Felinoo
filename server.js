@@ -4,7 +4,11 @@ const cors = require('cors');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 const session = require('express-session');
+const user_routes = require('./routes/user_routes');
 const cat_routes = require('./routes/cat_routes');
+const adoption_routes = require('./routes/adoption_routes');
+const rehome_routes = require('./routes/rehome_routes');
+const donations_routes = require('./routes/donations_routes');
 
 app.use(cors());
 app.use(express.json());
@@ -14,10 +18,15 @@ app.use(session({
     secret: 'secret-key',
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false }
+    cookie: { secure: false },
+    maxAge: 24 * 60 * 60 * 1000 
 }));
 
 app.use('/api/cats', cat_routes);
+app.use('/api/users', user_routes);
+app.use('/api/adoptions', adoption_routes);
+app.use('/api/rehomes', rehome_routes);
+app.use('/api/donations', donations_routes);
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'index.html'));
