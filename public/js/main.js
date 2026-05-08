@@ -46,6 +46,32 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
+    // 2. Mobile Menu Toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const header = document.querySelector('header');
+    
+    if (menuToggle && header) {
+        menuToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            header.classList.toggle('mobile-nav-active');
+        });
+
+        // Close menu when clicking links
+        const navLinks = document.querySelectorAll('nav a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                header.classList.remove('mobile-nav-active');
+            });
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!header.contains(e.target) && header.classList.contains('mobile-nav-active')) {
+                header.classList.remove('mobile-nav-active');
+            }
+        });
+    }
+
     // Logout logic
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
