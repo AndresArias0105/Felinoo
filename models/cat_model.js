@@ -26,9 +26,9 @@ const catModel ={
         });
     },
 
-    getCatById: (id) => {
+    getCatById: (id_cat) => {
         return new Promise((resolve, reject) => {
-            pool.query('SELECT * FROM cats WHERE id = $1', [id], (error, results) => {
+            pool.query('SELECT * FROM cats WHERE id_cat = $1', [id_cat], (error, results) => {
                 if (error) {
                     reject(error);
                 } else {
@@ -38,9 +38,9 @@ const catModel ={
         });
     },
 
-    updateCat: (id, name, age, description, img_url) => {
+    updateCat: (id_cat, name, age, description, img_url) => {
         return new Promise((resolve, reject) => {
-            pool.query('UPDATE cats SET name = $1, age = $2, description = $3, img_url = $4 WHERE id = $5 RETURNING *', [name, age, description, img_url, id], (error, results) => {
+            pool.query('UPDATE cats SET name = $1, age = $2, description = $3, img_url = $4 WHERE id_cat = $5 RETURNING *', [name, age, description, img_url, id_cat], (error, results) => {
                 if (error) {
                     reject(error);
                 } else {
@@ -50,9 +50,9 @@ const catModel ={
         });
     },
 
-    deleteCat: (id) => {
+    deleteCat: (id_cat) => {
         return new Promise((resolve, reject) => {
-            pool.query('DELETE FROM cats WHERE id = $1 RETURNING *', [id], (error, results) => {
+            pool.query('DELETE FROM cats WHERE id_cat = $1 RETURNING *', [id_cat], (error, results) => {
                 if (error) {
                     reject(error);
                 } else {

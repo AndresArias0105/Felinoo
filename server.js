@@ -46,6 +46,26 @@ app.get('/login', (req, res) => {
 app.get('/register', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'register.html'));
 });
+const isAdmin = (req, res, next) => {
+    if (req.session && req.session.user_id && req.session.rol === 'admin') {
+        next();
+    } else {
+        res.redirect('/login');
+    }
+};
+
+app.get('/admin', isAdmin, (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'admin.html'));
+});
+app.get('/requests', isAdmin, (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'requests.html'));
+});
+app.get('/register_cat', isAdmin, (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'register_cat.html'));
+});
+app.get('/supports', isAdmin, (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'supports.html'));
+});
 
 
 

@@ -1,9 +1,9 @@
 const adoptions = require('../models/adoption_model');
 
 const adoptionsController = {
-    listarTodasLasAdopciones = async (req, res) => {
+    listarTodasLasAdopciones: async (req, res) => {
         try {
-            const adopciones = await adoptions.getAllAdoptions();
+            const adopciones = await adoptions.getAllAdoptionRequests();
             res.status(200).json({
                 message: "Adopciones listadas exitosamente",
                 adopciones: adopciones,
@@ -18,7 +18,7 @@ const adoptionsController = {
         }
     },
 
-    crearAdopcion = async (req, res) => {
+    crearAdopcion: async (req, res) => {
         try {
             const { id_user, id_cat } = req.body;
             const nuevaAdopcion = await adoptions.createAdoptionRequest(id_user, id_cat);
@@ -36,7 +36,7 @@ const adoptionsController = {
         }
     },
 
-    aceptarAdopcion = async (req, res) => {
+    aceptarAdopcion: async (req, res) => {
         try {
             const { id } = req.params;
             const adopcionAceptada = await adoptions.acceptAdoptionRequest(id);
@@ -57,7 +57,7 @@ const adoptionsController = {
         }
     },
 
-    rechazarAdopcion = async (req, res) => {
+    rechazarAdopcion: async (req, res) => {
         try {
             const { id } = req.params;
             const adopcionRechazada = await adoptions.rejectAdoptionRequest(id);

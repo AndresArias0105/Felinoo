@@ -2,9 +2,9 @@ const rehome = require('../models/rehome_model');
 const { crearAdopcion, rechazarAdopcion } = require('./adoption_controller');
 
 const rehomeController = {
-    listarTodosLosRehomes = async (req, res) => {
+    listarTodosLosRehomes: async (req, res) => {
         try {
-            const rehomes = await rehome.getAllRehomes();
+            const rehomes = await rehome.getAllRehomeRequests();
             res.status(200).json({
                 message: "Rehomes listados exitosamente",
                 rehomes: rehomes,
@@ -19,10 +19,14 @@ const rehomeController = {
         }
     },
 
-    crearRehome = async (req, res) => {
+    crearRehome: async (req, res) => {
         try {
-            const { id_user, id_cat } = req.body;
-            const nuevoRehome = await rehome.createRehome(id_user, id_cat);
+            const { id_user, cat_name, cat_age, cat_description } = req.body;
+            const img_url = req.file ? req.file.path : null;
+            if (!img_url) {
+                return res.status(400).json({ message: "La imagen del gatito es obligatoria" });
+            }
+            const nuevoRehome = await rehome.createRehomeRequest(id_user, cat_name, cat_age, cat_description, img_url);
             res.status(201).json({
                 message: "Rehome creado exitosamente",
                 rehome: nuevoRehome,
@@ -37,19 +41,16 @@ const rehomeController = {
         }
     },
 
-    aceptarRehome = async (req, res) => {
+    aceptarRehome: async (req, res) => {
         try {
             const { id } = req.params;
-            const rehome = await rehome.getRehomeById(id);
-            if (!rehome) {
-                return res.status(404).json({
-                    message: "Rehome no encontrado"
-                });
+            const updatedRehome = await rehome.acceptRehomeRequest(id);
+            if (!updatedRehome) {
+                return res.status(404).json({ message: "Rehome no encontrado" });
             }
-            await rehome.aceptar();
             res.status(200).json({
                 message: "Rehome aceptado exitosamente",
-                rehome: rehome
+                rehome: updatedRehome
             });
         } catch (error) {
             console.error("=== ERROR CRÍTICO EN EL SERVIDOR ===");
@@ -61,19 +62,16 @@ const rehomeController = {
         }
     },
 
-    rechazarRehome = async (req, res) => {
+    rechazarRehome: async (req, res) => {
         try {
             const { id } = req.params;
-            const rehome = await rehome.getRehomeById(id);
-            if (!rehome) {
-                return res.status(404).json({
-                    message: "Rehome no encontrado"
-                });
+            const updatedRehome = await rehome.rejectRehomeRequest(id);
+            if (!updatedRehome) {
+                return res.status(404).json({ message: "Rehome no encontrado" });
             }
-            await rehome.rechazar();
             res.status(200).json({
                 message: "Rehome rechazado exitosamente",
-                rehome: rehome
+                rehome: updatedRehome
             });
         } catch (error) {
             console.error("=== ERROR CRÍTICO EN EL SERVIDOR ===");

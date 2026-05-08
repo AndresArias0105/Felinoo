@@ -80,8 +80,8 @@
                                 <input type="text" id="catAge" required placeholder="Ej: 3 meses / 2 años">
                             </div>
                             <div class="form-group">
-                                <label for="catDesc">Descripción y personalidad</label>
-                                <textarea id="catDesc" required placeholder="Cuéntanos sobre su comportamiento, vacunas, etc." style="resize: vertical; min-height: 80px;"></textarea>
+                                <label for="catDescription">Descripción y personalidad</label>
+                                <textarea id="catDescription" required placeholder="Cuéntanos sobre su comportamiento, vacunas, etc." style="resize: vertical; min-height: 80px;"></textarea>
                             </div>
                             <div class="form-group">
                                 <label for="catPhotoFile">Foto del gatito</label>
@@ -105,63 +105,5 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/js/main.js"></script>
-    <script>
-        document.getElementById('rehomeForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            // Mostrar estado de carga
-            Swal.fire({
-                title: 'Subiendo información...',
-                text: 'Estamos enviando la foto a Cloudinary',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-
-            const formData = new FormData();
-            formData.append('name', document.getElementById('catName').value);
-            formData.append('age', document.getElementById('catAge').value);
-            formData.append('description', document.getElementById('catDesc').value);
-            
-            const fotoFile = document.getElementById('catPhotoFile').files[0];
-            if (fotoFile) {
-                formData.append('foto-gato', fotoFile);
-            }
-
-            try {
-                const response = await fetch('/api/cats/admin/nuevo-gato', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const result = await response.json();
-
-                if (response.ok) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: '¡Publicado!',
-                        text: 'El gatito se ha registrado correctamente.',
-                        footer: `<a href="${result.gato.img_url}" target="_blank">Ver foto en Cloudinary</a>`
-                    });
-                    // Opcional: resetear formulario o redirigir
-                    // document.getElementById('rehomeForm').reset();
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: result.message || 'No se pudo subir la imagen'
-                    });
-                }
-            } catch (error) {
-                console.error("Error:", error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error de red',
-                    text: 'No se pudo conectar con el servidor'
-                });
-            }
-        });
-    </script>
 </body>
 </html>

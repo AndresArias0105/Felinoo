@@ -25,3 +25,5 @@ const donationModel = {
         });
     },
 }
+
+module.exports = donationModel;

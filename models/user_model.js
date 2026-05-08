@@ -15,7 +15,7 @@ const userModel = {
 
     createUser: (fullname, email, phone, username, hashed_password) => {
         return new Promise((resolve, reject) => {
-            pool.query('INSERT INTO users (fullname, email, phone, username, password) VALUES ($1, $2, $3, $4, $5) RETURNING *', [fullname, email, phone, username, hashed_password], (error, results) => {
+            pool.query('INSERT INTO users (fullname, email, phone, username, password_hash) VALUES ($1, $2, $3, $4, $5) RETURNING *', [fullname, email, phone, username, hashed_password], (error, results) => {
                 if (error) {
                     reject(error);
                 } else {
@@ -25,9 +25,9 @@ const userModel = {
         });
     },
 
-    editUser: (row, value, id) => {
+    editUser: (row, value, id_user) => {
         return new Promise((resolve, reject) => {
-            pool.query(`UPDATE users SET ${row} = $1 WHERE id = $2 RETURNING *`, [value, id], (error, results) => {
+            pool.query(`UPDATE users SET ${row} = $1 WHERE id_user = $2 RETURNING *`, [value, id_user], (error, results) => {
                 if (error) {
                     reject(error);
                 } else {
@@ -37,9 +37,9 @@ const userModel = {
         });
     },
 
-    userLogin : (username, password) => {
+    userLogin : (username) => {
         return new Promise((resolve, reject) => {
-            pool.query('SELECT * FROM users WHERE username = $1 AND password = $2', [username, password], (error, results) => {
+            pool.query('SELECT * FROM users WHERE username = $1', [username], (error, results) => {
                 if (error) {
                     reject(error);
                 } else {

@@ -9,7 +9,7 @@ const upload = multer({ storage });
 router.post("/admin/nuevo-gato", upload.single("foto-gato"), cat_controller.crearGato);
 router.get("/", cat_controller.listarTodosLosGatos);
 router.get("/:id", cat_controller.getGatoPorId);
-router.put("/:id", upload.single("foto-gato"), cat_controller.actualizarGato);
+router.put("/:id", upload.single("foto-gato"), cat_controller.editarGato);
 router.delete("/:id", cat_controller.eliminarGato);
 router.get("/adoptados", cat_controller.listarGatosAdoptados);
 

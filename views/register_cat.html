@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Gatito - Admin Felinoo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles/style.css">
+    <style>
+        .admin-section { padding: 40px 20px; max-width: 800px; margin: 0 auto; }
+        .form-container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; }
+        .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-family: 'Nunito', sans-serif; box-sizing: border-box; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="/img/Logo.png" alt="Logo Felinoo">
+            <a href="/admin" style="text-decoration:none; color:inherit;"><span>Felinoo Admin</span></a>
+        </div>
+        <nav>
+            <a href="/admin">Volver al Panel</a>
+        </nav>
+    </header>
+
+    <section class="admin-section">
+        <div class="form-container">
+            <h2>Registrar Nuevo Gatito</h2>
+            <form id="registerCatForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="name">Nombre del Gatito</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="age">Edad (Meses)</label>
+                    <input type="number" id="age" name="age" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Descripción</label>
+                    <textarea id="description" name="description" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="foto-gato">Foto del Gatito</label>
+                    <input type="file" id="foto-gato" name="foto-gato" accept="image/*" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Registrar</button>
+            </form>
+        </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.getElementById('registerCatForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch('/api/cats/admin/nuevo-gato', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+
+                if (response.ok) {
+                    Swal.fire('Éxito', 'Gatito registrado correctamente', 'success').then(() => {
+                        window.location.href = '/admin';
+                    });
+                } else {
+                    Swal.fire('Error', result.message || 'Error al registrar', 'error');
+                }
+            } catch (error) {
+                console.error(error);
+                Swal.fire('Error', 'No se pudo conectar con el servidor', 'error');
+            }
+        });
+    </script>
+</body>
+</html>

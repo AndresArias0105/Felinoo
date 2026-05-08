@@ -1,15 +1,29 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // 1. Fetch Session from API (No more localStorage)
+    let currentUser = null;
+    let currentUserId = null;
+    
+    try {
+        const res = await fetch('/api/users/session', { credentials: 'same-origin' });
+        if (res.ok) {
+            const data = await res.json();
+            currentUser = data.username;
+            currentUserId = data.user_id;
+        }
+    } catch (e) {
+        console.error("No se pudo verificar la sesión", e);
+    }
+
     // Nav update logic
     function updateNav() {
-        const user = localStorage.getItem('felinoo_user');
         const authButtons = document.querySelector('.auth-buttons');
         const userMenu = document.getElementById('userMenu');
         const navUsername = document.getElementById('navUsername');
         
-        if (user && authButtons && userMenu) {
+        if (currentUser && authButtons && userMenu) {
             authButtons.style.display = 'none';
             userMenu.style.display = 'inline-block';
-            if (navUsername) navUsername.textContent = user;
+            if (navUsername) navUsername.textContent = currentUser;
         }
     }
     
@@ -35,46 +49,127 @@ document.addEventListener('DOMContentLoaded', () => {
     // Logout logic
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
-        logoutBtn.addEventListener('click', (e) => {
+        logoutBtn.addEventListener('click', async (e) => {
             e.preventDefault();
-            localStorage.removeItem('felinoo_user');
-            window.location.reload();
+            try {
+                await fetch('/api/users/logout', { method: 'POST', credentials: 'same-origin' });
+                window.location.reload();
+            } catch (err) {
+                console.error(err);
+            }
         });
     }
 
     // Adopt buttons logic
-    const adoptButtons = document.querySelectorAll('.adopt-btn');
-    if (adoptButtons.length > 0) {
-        adoptButtons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const catName = e.target.getAttribute('data-cat-name');
-                const user = localStorage.getItem('felinoo_user');
+    function attachAdoptButtonsListeners() {
+        const adoptButtons = document.querySelectorAll('.adopt-btn');
+        if (adoptButtons.length > 0) {
+            adoptButtons.forEach(btn => {
+                // Remove existing listener to avoid duplicates
+                const newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
                 
-                if (user) {
-                    Swal.fire({
-                        title: '¡Proceso Iniciado!',
-                        text: `¡Felicidades ${user}! Hemos iniciado tu proceso de adopción para ${catName}. Nos pondremos en contacto contigo muy pronto.`,
-                        icon: 'success',
-                        confirmButtonColor: '#AED4BD'
-                    });
-                } else {
-                    Swal.fire({
-                        title: 'Inicia sesión',
-                        text: `¡Gracias por tu interés en ${catName}! Por favor inicia sesión o regístrate para poder adoptar.`,
-                        icon: 'info',
-                        showCancelButton: true,
-                        confirmButtonText: 'Iniciar Sesión',
-                        cancelButtonText: 'Cancelar',
-                        confirmButtonColor: '#AED4BD'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.href = '/login';
+                newBtn.addEventListener('click', async (e) => {
+                    const catName = e.target.getAttribute('data-cat-name');
+                    const catId = e.target.getAttribute('data-cat-id');
+                    
+                    if (currentUser && currentUserId) {
+                        try {
+                            const res = await fetch('/api/adoptions/solicitud', {
+                                method: 'POST',
+                                credentials: 'same-origin',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ id_user: currentUserId, id_cat: catId })
+                            });
+                            const data = await res.json();
+                            if (res.ok) {
+                                Swal.fire({
+                                    title: '¡Proceso Iniciado!',
+                                    text: `¡Felicidades ${currentUser}! Hemos iniciado tu proceso de adopción para ${catName}. Nos pondremos en contacto contigo muy pronto.`,
+                                    icon: 'success',
+                                    confirmButtonColor: '#AED4BD'
+                                });
+                            } else {
+                                Swal.fire('Error', data.message || 'Error al solicitar adopción', 'error');
+                            }
+                        } catch (error) {
+                            Swal.fire('Error', 'No se pudo conectar con el servidor', 'error');
                         }
-                    });
-                }
+                    } else {
+                        Swal.fire({
+                            title: 'Inicia sesión',
+                            text: `¡Gracias por tu interés en ${catName}! Por favor inicia sesión o regístrate para poder adoptar.`,
+                            icon: 'info',
+                            showCancelButton: true,
+                            confirmButtonText: 'Iniciar Sesión',
+                            cancelButtonText: 'Cancelar',
+                            confirmButtonColor: '#AED4BD'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = '/login';
+                            }
+                        });
+                    }
+                });
             });
-        });
+        }
     }
+
+    async function loadAdoptableCats() {
+        const catsGrid = document.getElementById('catsGrid');
+        if (!catsGrid) return;
+        
+        catsGrid.innerHTML = '<p style="text-align:center; width:100%;">Cargando michis disponibles...</p>';
+        
+        try {
+            const resCats = await fetch('/api/cats', { credentials: 'same-origin' });
+            const dataCats = await resCats.json();
+            
+            let allAdoptables = [];
+            
+            if (dataCats.gatos) {
+                const disponibles = dataCats.gatos.filter(g => g.estado === 'disponible');
+                allAdoptables = disponibles.map(g => ({
+                    id: g.id_cat,
+                    name: g.name,
+                    age: g.age + (g.age === 1 ? ' año' : ' años'),
+                    desc: g.description,
+                    img: g.img_url,
+                    type: 'cat'
+                }));
+            }
+            
+            catsGrid.innerHTML = '';
+            
+            if (allAdoptables.length === 0) {
+                catsGrid.innerHTML = '<p style="text-align:center; width:100%;">En este momento no hay gatitos disponibles para adopción. ¡Vuelve pronto!</p>';
+                return;
+            }
+            
+            allAdoptables.forEach(cat => {
+                const card = document.createElement('div');
+                card.className = 'cat-card';
+                card.innerHTML = `
+                    <img src="${cat.img || 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=400&q=80'}" alt="${cat.name}">
+                    <div class="cat-info">
+                        <h3>${cat.name}</h3>
+                        <p class="cat-age">${cat.age}</p>
+                        <p class="cat-desc">${cat.desc}</p>
+                        <button class="btn btn-primary btn-full adopt-btn" data-cat-name="${cat.name}" data-cat-id="${cat.id}" data-cat-type="${cat.type}">Adoptar a ${cat.name}</button>
+                    </div>
+                `;
+                catsGrid.appendChild(card);
+            });
+            
+            attachAdoptButtonsListeners();
+            
+        } catch (error) {
+            console.error(error);
+            catsGrid.innerHTML = '<p style="text-align:center; width:100%; color:red;">Error al cargar los gatitos.</p>';
+        }
+    }
+
+    loadAdoptableCats();
 
     const rehomeForm = document.getElementById('rehomeForm');
     const catsGrid = document.getElementById('catsGrid');
@@ -106,21 +201,64 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        rehomeForm.addEventListener('submit', (e) => {
+        rehomeForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const name = document.getElementById('catName').value;
+            const catName = document.getElementById('catName').value;
+            const catAge = document.getElementById('catAge') ? document.getElementById('catAge').value : 0;
+            const catDescription = document.getElementById('catDescription') ? document.getElementById('catDescription').value : '';
             const finalOwnerName = ownerName.value || 'Amigo/a';
+            const catPhotoFile = document.getElementById('catPhotoFile') ? document.getElementById('catPhotoFile').files[0] : null;
+
+            if (!currentUserId) {
+                Swal.fire('Error', 'Debes iniciar sesión para dar en adopción', 'error');
+                return;
+            }
+            
+            if (!catPhotoFile) {
+                Swal.fire('Error', 'Debes subir una foto del gatito', 'error');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('id_user', currentUserId);
+            formData.append('cat_name', catName);
+            formData.append('cat_age', catAge);
+            formData.append('cat_description', catDescription);
+            formData.append('foto-gato', catPhotoFile);
 
             Swal.fire({
-                title: '¡Solicitud Recibida!',
-                text: `Hola ${finalOwnerName}, hemos recibido los datos de ${name}. Tu solicitud se encuentra EN ESPERA y será revisada por nuestro equipo. Nos pondremos en contacto contigo pronto.`,
-                icon: 'info',
-                confirmButtonColor: '#AED4BD',
-                confirmButtonText: 'Entendido'
+                title: 'Subiendo información...',
+                text: 'Estamos enviando la foto de forma segura',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
             });
-            rehomeForm.reset();
-            step2.style.display = 'none';
-            step1.style.display = 'block';
+
+            try {
+                const res = await fetch('/api/rehomes/solicitud', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    body: formData
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    Swal.fire({
+                        title: '¡Solicitud Recibida!',
+                        text: `Hola ${finalOwnerName}, hemos recibido los datos de ${catName}. Tu solicitud se encuentra EN ESPERA y será revisada por nuestro equipo. Nos pondremos en contacto contigo pronto.`,
+                        icon: 'info',
+                        confirmButtonColor: '#AED4BD',
+                        confirmButtonText: 'Entendido'
+                    });
+                    rehomeForm.reset();
+                    step2.style.display = 'none';
+                    step1.style.display = 'block';
+                } else {
+                    Swal.fire('Error', data.message || 'Error al procesar la solicitud', 'error');
+                }
+            } catch (error) {
+                Swal.fire('Error', 'No se pudo conectar con el servidor', 'error');
+            }
         });
     }
 
@@ -175,13 +313,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (donationForm) {
         const donorNameInput = document.getElementById('donorName');
-        const user = localStorage.getItem('felinoo_user');
         
-        if (user && donorNameInput) {
-            donorNameInput.value = user;
+        if (currentUser && donorNameInput) {
+            donorNameInput.value = currentUser;
         }
 
-        donationForm.addEventListener('submit', (e) => {
+        donationForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const selectedAmount = document.querySelector('input[name="amount"]:checked').value;
@@ -194,13 +331,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const name = donorNameInput.value;
             const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
             
-            let paymentText = 'PayPal';
-            if (paymentMethod === 'card') {
-                const cardNum = cardNumber ? cardNumber.value : '';
-                const last4 = cardNum.slice(-4) || '****';
-                paymentText = `Tarjeta terminada en ${last4}`;
-            }
-            
             Swal.fire({
                 title: 'Procesando Donación...',
                 html: `Conectando de forma segura con ${paymentMethod === 'card' ? 'el banco' : 'PayPal'}...`,
@@ -210,71 +340,121 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
-            setTimeout(() => {
-                Swal.fire({
-                    title: '¡Donación Exitosa!',
-                    text: `¡Mil gracias ${name} por tu donación de $${finalAmount}! Este dinero irá directamente al cuidado y rescate de nuestros gatitos.`,
-                    icon: 'success',
-                    confirmButtonColor: '#AED4BD'
+            try {
+                const res = await fetch('/api/donations', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id_user: currentUserId || null, amount: finalAmount, payment_method: paymentMethod })
                 });
-                
-                donationForm.reset();
-                customAmountGroup.style.display = 'none';
-                customAmountInput.required = false;
-                
-                // Reset to default payment
-                if (cardDetailsGroup) cardDetailsGroup.style.display = 'block';
-                if (paypalDetailsGroup) paypalDetailsGroup.style.display = 'none';
-                if (cardNumber) cardNumber.required = true;
-                if (cardExpiry) cardExpiry.required = true;
-                if (cardCvc) cardCvc.required = true;
-                if (paypalEmail) paypalEmail.required = false;
+                const data = await res.json();
+                if (res.ok) {
+                    Swal.fire({
+                        title: '¡Donación Exitosa!',
+                        text: `¡Mil gracias ${name} por tu donación de $${finalAmount}! Este dinero irá directamente al cuidado y rescate de nuestros gatitos.`,
+                        icon: 'success',
+                        confirmButtonColor: '#AED4BD'
+                    });
+                    
+                    donationForm.reset();
+                    customAmountGroup.style.display = 'none';
+                    customAmountInput.required = false;
+                    
+                    if (cardDetailsGroup) cardDetailsGroup.style.display = 'block';
+                    if (paypalDetailsGroup) paypalDetailsGroup.style.display = 'none';
+                    if (cardNumber) cardNumber.required = true;
+                    if (cardExpiry) cardExpiry.required = true;
+                    if (cardCvc) cardCvc.required = true;
+                    if (paypalEmail) paypalEmail.required = false;
 
-                const defaultRadio = document.querySelector('input[name="amount"][value="20"]');
-                if (defaultRadio) defaultRadio.checked = true;
-                const defaultPayment = document.querySelector('input[name="payment"][value="card"]');
-                if (defaultPayment) defaultPayment.checked = true;
+                    const defaultRadio = document.querySelector('input[name="amount"][value="20"]');
+                    if (defaultRadio) defaultRadio.checked = true;
+                    const defaultPayment = document.querySelector('input[name="payment"][value="card"]');
+                    if (defaultPayment) defaultPayment.checked = true;
 
-                if (user && donorNameInput) donorNameInput.value = user; // keep it filled
-            }, 2000);
+                    if (currentUser && donorNameInput) donorNameInput.value = currentUser; 
+                } else {
+                    Swal.fire('Error', data.message || 'Error al procesar la donación', 'error');
+                }
+            } catch (error) {
+                Swal.fire('Error', 'No se pudo conectar con el servidor', 'error');
+            }
         });
     }
 
     // Auth Forms Logic
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
-        loginForm.addEventListener('submit', (e) => {
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const username = document.getElementById('username').value;
+            const password = document.getElementById('password') ? document.getElementById('password').value : '123456'; 
             
-            // Save mock session
-            localStorage.setItem('felinoo_user', username);
-            
-            Swal.fire({
-                title: '¡Bienvenido de vuelta!',
-                text: `Hola ${username}, has iniciado sesión correctamente.`,
-                icon: 'success',
-                confirmButtonColor: '#AED4BD'
-            }).then(() => {
-                window.location.href = '/';
-            });
+            try {
+                const res = await fetch('/api/users/login', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+                
+                if (res.ok) {
+                    Swal.fire({
+                        title: '¡Bienvenido de vuelta!',
+                        text: `Hola ${username}, has iniciado sesión correctamente.`,
+                        icon: 'success',
+                        confirmButtonColor: '#AED4BD'
+                    }).then(() => {
+                        if (data.usuario && (data.usuario.role === 'admin' || data.usuario.rol === 'admin')) {
+                            window.location.href = '/admin';
+                        } else {
+                            window.location.href = '/';
+                        }
+                    });
+                } else {
+                    Swal.fire('Error', data.message || 'Credenciales inválidas', 'error');
+                }
+            } catch (error) {
+                Swal.fire('Error', 'No se pudo conectar con el servidor', 'error');
+            }
         });
     }
 
     const registerForm = document.getElementById('registerForm');
     if (registerForm) {
-        registerForm.addEventListener('submit', (e) => {
+        registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const fullname = document.getElementById('fullname').value.split(' ')[0]; // Gets first name
+            const fullname = document.getElementById('fullname').value;
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const password = document.getElementById('password').value;
             
-            Swal.fire({
-                title: '¡Registro exitoso!',
-                text: `Bienvenido a la familia Felinoo, ${fullname}. Tu cuenta ha sido creada.`,
-                icon: 'success',
-                confirmButtonColor: '#AED4BD'
-            }).then(() => {
-                window.location.href = '/login';
-            });
+            try {
+                const res = await fetch('/api/users/registro', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fullname, username, email, phone, password })
+                });
+                const data = await res.json();
+                
+                if (res.ok) {
+                    Swal.fire({
+                        title: '¡Registro exitoso!',
+                        text: `Bienvenido a la familia Felinoo, ${fullname.split(' ')[0]}. Tu cuenta ha sido creada.`,
+                        icon: 'success',
+                        confirmButtonColor: '#AED4BD'
+                    }).then(() => {
+                        window.location.href = '/login';
+                    });
+                } else {
+                    Swal.fire('Error', data.message || 'Error al registrar', 'error');
+                }
+            } catch (error) {
+                Swal.fire('Error', 'No se pudo conectar con el servidor', 'error');
+            }
         });
     }
 });

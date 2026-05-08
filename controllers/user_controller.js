@@ -9,13 +9,19 @@ const hashPassword= async (password) => {
 }
 
 const comparePassword = async (password, hashedPassword) => {
-    const isMatch = await bcrypt.compare(password, hashedPassword);
-    return isMatch;
+    if (!hashedPassword) return false;
+    if (password === hashedPassword) return true; // Fallback for old plaintext accounts
+    try {
+        const isMatch = await bcrypt.compare(password, hashedPassword);
+        return isMatch;
+    } catch (e) {
+        return false;
+    }
 }
 
 
 const userController = {
-    listarTodosLosUsuarios = async (req, res) => {
+    listarTodosLosUsuarios: async (req, res) => {
         try {
             const usuarios = await user.getAllUsers();
             res.status(200).json({
@@ -32,7 +38,7 @@ const userController = {
         }
     },
 
-    crearUsuario = async (req, res) => {
+    crearUsuario: async (req, res) => {
         try {
             const { fullname, email, phone, username, password } = req.body;
             const hashed_password = await hashPassword(password);
@@ -51,7 +57,7 @@ const userController = {
         }
     },
 
-    editarUsuario = async (req, res) => {
+    editarUsuario: async (req, res) => {
         try {
             const { id } = req.params;
             const { row, value } = req.body;
@@ -73,22 +79,30 @@ const userController = {
         };
     },
 
-    loginUsuario = async (req, res) => {
+    loginUsuario: async (req, res) => {
         try {
             const { username, password } = req.body;
-            const userData = await user.userLogin(username, password);
+            const userData = await user.userLogin(username);
             if (!userData) {
                 return res.status(401).json({ message: "Credenciales inválidas" });
             }
-            const isPasswordValid = await comparePassword(password, userData.password);
+            const isPasswordValid = await comparePassword(password, userData.password_hash || userData.password);
             if (!isPasswordValid) {
                 return res.status(401).json({ message: "Credenciales inválidas" });
             }
-            req.session.id_empleado = userData.id;
-            req.session.rol= userData.rol;
-            res.status(200).json({
-                message: "Inicio de sesión exitoso",
-                usuario: userData,
+            req.session.id_empleado = userData.id_user || userData.id;
+            req.session.rol = userData.role || userData.rol;
+            req.session.user_id = userData.id_user || userData.id;
+            req.session.username = userData.username;
+            req.session.save((err) => {
+                if (err) {
+                    console.error("Error al guardar sesión", err);
+                    return res.status(500).json({ message: "Error interno del servidor al iniciar sesión" });
+                }
+                res.status(200).json({
+                    message: "Inicio de sesión exitoso",
+                    usuario: userData,
+                });
             });
 
 
@@ -102,7 +116,19 @@ const userController = {
         }
     },
 
-    logoutUsuario = (req, res) => {
+    verificarSesion: (req, res) => {
+        if (req.session && req.session.user_id) {
+            res.status(200).json({
+                user_id: req.session.user_id,
+                username: req.session.username,
+                rol: req.session.rol
+            });
+        } else {
+            res.status(401).json({ message: "No hay sesión activa" });
+        }
+    },
+
+    logoutUsuario: (req, res) => {
         try {
             req.session.destroy((err) => {
                 if (err) {

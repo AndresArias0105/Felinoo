@@ -1,7 +1,7 @@
 const cat = require("../models/cat_model");
 
 const catController = {
-    listarTodosLosGatos = async (req, res) => {
+    listarTodosLosGatos: async (req, res) => {
         try {
             const gatos = await cat.getAllCats();
             res.status(200).json({
@@ -18,7 +18,7 @@ const catController = {
         }
     },
 
-    crearGato = async (req, res) => {
+    crearGato: async (req, res) => {
         try {
             const { name, age, description } = req.body;
 
@@ -46,7 +46,7 @@ const catController = {
         };
     },
 
-    getGatoPorId = async (req, res) => {
+    getGatoPorId: async (req, res) => {
         try {
             const { id } = req.params;
             const gato = await cat.getCatById(id);
@@ -67,7 +67,7 @@ const catController = {
         }
     },
 
-    editarGato = async (req, res) => {
+    editarGato: async (req, res) => {
         try {
             const { id } = req.params;
             const { name, age, description } = req.body;
@@ -94,7 +94,7 @@ const catController = {
 
     },
 
-    eliminarGato = async (req, res) => {
+    eliminarGato: async (req, res) => {
         try {
             const { id } = req.params;
             const deletedGato = await cat.deleteCat(id);
@@ -115,7 +115,7 @@ const catController = {
         }
     },
 
-    listarGatosAdoptados = async (req, res) => {
+    listarGatosAdoptados: async (req, res) => {
         try {
             const adoptedCats = await cat.getAdoptedCats();
             res.status(200).json({
