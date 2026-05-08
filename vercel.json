@@ -6,9 +6,9 @@
     }
   },
   "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/server.js"
-    }
+    { "source": "/styles/(.*)", "destination": "/public/styles/$1" },
+    { "source": "/js/(.*)", "destination": "/public/js/$1" },
+    { "source": "/img/(.*)", "destination": "/public/img/$1" },
+    { "source": "/(.*)", "destination": "/server.js" }
   ]
 }
