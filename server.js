@@ -69,9 +69,27 @@ app.get('/supports', isAdmin, (req, res) => {
 
 
 
-if (process.env.NODE_ENV !== 'production') {
-    app.listen(3000, () => {
-        console.log('Server is running on port 3000: http://localhost:3000');
+const PORT = process.env.PORT || 3000;
+
+// Iniciamos el servidor solo si no estamos en el entorno de Vercel
+if (!process.env.VERCEL) {
+    const server = app.listen(PORT, () => {
+        console.log(`
+        ====================================================
+        🚀 SERVIDOR LOCAL INICIADO
+        📦 Puerto: ${PORT}
+        🔗 URL: http://localhost:${PORT}
+        ====================================================
+        `);
+    });
+
+    server.on('error', (error) => {
+        if (error.code === 'EADDRINUSE') {
+            console.error(`❌ ERROR: El puerto ${PORT} ya está siendo usado.`);
+            process.exit(1);
+        } else {
+            console.error('❌ Error al iniciar el servidor:', error);
+        }
     });
 }
 

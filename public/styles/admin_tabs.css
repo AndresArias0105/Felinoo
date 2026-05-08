@@ -13,15 +13,42 @@
 }
 
 .tab-btn {
-  padding: 8px 15px;
+  padding: 10px 20px;
   border: none;
-  background: #ddd;
-  border-radius: 8px 8px 0 0;
+  background: #f0f0f0;
+  border-radius: 10px 10px 0 0;
   cursor: pointer;
   font-family: "Nunito", sans-serif;
   font-weight: 600;
   font-size: 14px;
   white-space: nowrap;
+  transition: all 0.3s ease;
+  color: #666;
+}
+
+.tab-btn.active {
+  background: var(--primary-color, #AED4BD);
+  color: white;
+}
+
+.tab-btn:hover:not(.active) {
+  background: #e0e0e0;
+}
+
+/* Hide all tab contents by default */
+.tab-content {
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Show only the active tab content */
+.tab-content.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* Container for responsive table */

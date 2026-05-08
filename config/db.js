@@ -7,4 +7,8 @@ const pool = new Pool({
     }, 
 }); 
 
+pool.on('error', (err) => {
+    console.error('❌ Error inesperado en el pool de la base de datos:', err);
+});
+
 module.exports = pool;
