@@ -20,7 +20,14 @@ const donationController = {
     crearDonacion: async (req, res) => {
         try {
             const { id_user, amount, payment_method } = req.body;
-            const nuevaDonacion = await donation.createDonation(id_user || null, amount, payment_method);
+
+            if (!id_user) {
+                return res.status(401).json({
+                    message: "Debe iniciar sesión para realizar una donación."
+                });
+            }
+
+            const nuevaDonacion = await donation.createDonation(id_user, amount, payment_method);
             res.status(201).json({
                 message: "Donación registrada exitosamente",
                 donacion: nuevaDonacion,

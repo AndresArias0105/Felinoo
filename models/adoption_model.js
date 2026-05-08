@@ -3,7 +3,17 @@ const pool = require('../config/db');
 const adoptionRequestModel = {
     getAllAdoptionRequests: () => {
         return new Promise((resolve, reject) => {
-            pool.query('SELECT * FROM adoption_requests', (error, results) => {
+            const query = `
+                SELECT 
+                    ar.*, 
+                    u.fullname AS user_name, 
+                    c.name AS cat_name 
+                FROM adoption_requests ar
+                LEFT JOIN users u ON ar.id_user = u.id_user
+                LEFT JOIN cats c ON ar.id_cat = c.id_cat
+                ORDER BY ar.id_request DESC
+            `;
+            pool.query(query, (error, results) => {
                 if (error) {
                     reject(error);
                 } else {

@@ -320,6 +320,23 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         donationForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+
+            if (!currentUserId) {
+                Swal.fire({
+                    title: 'Inicia sesión',
+                    text: '¡Muchas gracias por tu intención de apoyar! Por favor, inicia sesión o regístrate para poder realizar una donación.',
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonText: 'Iniciar Sesión',
+                    cancelButtonText: 'Más tarde',
+                    confirmButtonColor: '#AED4BD'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '/login';
+                    }
+                });
+                return;
+            }
             
             const selectedAmount = document.querySelector('input[name="amount"]:checked').value;
             let finalAmount = selectedAmount;

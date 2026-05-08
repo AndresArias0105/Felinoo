@@ -3,7 +3,12 @@ const pool = require('../config/db');
 const rehomeRequestModel = {
     getAllRehomeRequests: () => {
         return new Promise((resolve, reject) => {
-            pool.query('SELECT * FROM rehome_requests', (error, results) => {
+            const query = `
+                SELECT rr.*, u.fullname as user_name 
+                FROM rehome_requests rr
+                JOIN users u ON rr.id_user = u.id_user
+            `;
+            pool.query(query, (error, results) => {
                 if (error) {
                     reject(error);
                 } else {

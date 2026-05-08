@@ -1,0 +1,154 @@
+/* --- Header / Nav --- */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 5%;
+    background-color: var(--white);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+
+nav {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+nav > a {
+    text-decoration: none;
+    color: var(--text-main);
+    font-weight: 600;
+    transition: color 0.3s;
+}
+
+nav > a:hover,
+nav > a.active-nav {
+    color: var(--primary-color);
+}
+
+nav > a.active-nav {
+    font-weight: 800;
+}
+
+.auth-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+/* --- User Dropdown --- */
+.user-menu {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: var(--white);
+    min-width: 180px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    border-radius: 12px;
+    z-index: 1001;
+    overflow: hidden;
+    top: calc(100% + 10px);
+    border: 1px solid #f1f1f1;
+}
+
+.dropdown-content a {
+    color: var(--text-main);
+    padding: 12px 20px;
+    text-decoration: none;
+    display: block;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.dropdown-content a:hover {
+    background-color: #f9f9f9;
+    color: var(--primary-color);
+}
+
+.user-menu.show .dropdown-content {
+    display: block;
+}
+
+/* --- Footer --- */
+footer {
+    text-align: center;
+    padding: 40px 20px;
+    background-color: var(--white);
+    color: var(--text-light);
+    border-top: 1px solid #eee;
+}
+
+footer p {
+    margin-bottom: 10px;
+}
+
+/* --- Responsive Layout --- */
+@media (max-width: 900px) {
+    header {
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 15px 5%;
+    }
+
+    .logo span {
+        font-size: 1.2rem;
+    }
+
+    .logo img {
+        width: 50px;
+    }
+
+    nav {
+        display: none; /* In a real project, we would use a toggleable mobile menu */
+    }
+
+    /* Simple mobile nav adjustment if displayed */
+    .mobile-nav-active nav {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 80px;
+        left: 0;
+        width: 100%;
+        background: var(--white);
+        padding: 20px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        gap: 20px;
+    }
+
+    .auth-buttons {
+        gap: 10px;
+    }
+
+    .btn {
+        padding: 8px 15px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    header {
+        padding: 10px 4%;
+    }
+
+    .logo span {
+        display: none; /* Hide text logo on very small screens to save space */
+    }
+
+    .auth-buttons {
+        gap: 5px;
+    }
+
+    .btn {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+}

@@ -5,25 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solicitudes - Admin Felinoo</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/styles/style.css">
-    <style>
-        .admin-section { padding: 40px 20px; max-width: 1000px; margin: 0 auto; }
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-        .tab-btn { padding: 10px 20px; border: none; background: #ddd; border-radius: 8px 8px 0 0; cursor: pointer; font-family: 'Nunito', sans-serif; font-weight: 600; font-size: 16px; }
-        .tab-btn.active { background: #AED4BD; color: white; }
-        .tab-content { display: none; background: white; padding: 20px; border-radius: 0 8px 8px 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .tab-content.active { display: block; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
-        th { background-color: #f8f9fa; }
-        .status-pending { color: orange; font-weight: bold; }
-        .status-accepted { color: green; font-weight: bold; }
-        .status-rejected { color: red; font-weight: bold; }
-        .action-btns { display: flex; gap: 5px; }
-        .action-btns button { padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; font-family: 'Nunito', sans-serif; }
-        .btn-accept { background: #AED4BD; color: white; }
-        .btn-reject { background: #e74c3c; color: white; }
-    </style>
+    <link rel="stylesheet" href="/styles/base.css">
+    <link rel="stylesheet" href="/styles/layout.css">
+    <link rel="stylesheet" href="/styles/admin_tabs.css">
 </head>
 <body>
     <header>
@@ -50,8 +34,8 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>ID Usuario</th>
-                        <th>ID Gatito</th>
+                        <th>Usuario</th>
+                        <th>Gatito</th>
                         <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
@@ -68,7 +52,7 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>ID Usuario</th>
+                        <th>Usuario</th>
                         <th>Gatito Info</th>
                         <th>Estado</th>
                         <th>Acciones</th>
@@ -98,6 +82,7 @@
             try {
                 const res = await fetch('/api/adoptions');
                 const data = await res.json();
+                console.log("Adopciones recibidas:", data);
                 const tbody = document.getElementById('adoptions-tbody');
                 tbody.innerHTML = '';
                 
@@ -108,8 +93,8 @@
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
                             <td>${req.id_request}</td>
-                            <td>${req.id_user}</td>
-                            <td>${req.id_cat}</td>
+                            <td>${req.user_name || req.id_user}</td>
+                            <td>${req.cat_name || req.id_cat}</td>
                             <td class="${statusClass}">${estado.toUpperCase()}</td>
                             <td class="action-btns">
                                 ${(estado === 'pendiente') ? `
@@ -133,6 +118,7 @@
             try {
                 const res = await fetch('/api/rehomes');
                 const data = await res.json();
+                console.log("Rehomes recibidos:", data);
                 const tbody = document.getElementById('rehomes-tbody');
                 tbody.innerHTML = '';
                 
@@ -143,7 +129,7 @@
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
                             <td>${req.id_request}</td>
-                            <td>${req.id_user}</td>
+                            <td>${req.user_name || req.id_user}</td>
                             <td>${req.cat_name || 'N/A'} (${req.cat_age || '?'} meses)</td>
                             <td class="${statusClass}">${estado.toUpperCase()}</td>
                             <td class="action-btns">

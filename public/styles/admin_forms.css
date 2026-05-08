@@ -1,0 +1,32 @@
+.admin-section { 
+    padding: 40px 20px; 
+    max-width: 800px; 
+    margin: 0 auto; 
+}
+
+.form-container { 
+    background: white; 
+    padding: 30px; 
+    border-radius: 12px; 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+}
+
+.form-group { 
+    margin-bottom: 20px; 
+}
+
+.form-group label { 
+    display: block; 
+    margin-bottom: 8px; 
+    font-weight: 600; 
+}
+
+.form-group input, 
+.form-group textarea { 
+    width: 100%; 
+    padding: 10px; 
+    border: 1px solid #ccc; 
+    border-radius: 8px; 
+    font-family: 'Nunito', sans-serif; 
+    box-sizing: border-box; 
+}
