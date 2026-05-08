@@ -13,7 +13,7 @@ const donations_routes = require('./routes/donations_routes');
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
     secret: 'secret-key',
     resave: false,
