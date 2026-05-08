@@ -245,6 +245,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 return;
             }
 
+            if (catPhotoFile.size > 4 * 1024 * 1024) {
+                Swal.fire('Foto muy pesada', 'La imagen no debe superar los 4MB para poder subirla a Vercel.', 'warning');
+                return;
+            }
+
             const formData = new FormData();
             formData.append('id_user', currentUserId);
             formData.append('cat_name', catName);

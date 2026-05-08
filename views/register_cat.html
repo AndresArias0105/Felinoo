@@ -54,8 +54,13 @@
     <script>
         document.getElementById('registerCatForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const form = e.target;
-            const formData = new FormData(form);
+            const catPhotoFile = document.getElementById('foto-gato').files[0];
+
+            if (catPhotoFile && catPhotoFile.size > 4 * 1024 * 1024) {
+                return Swal.fire('Foto muy pesada', 'La imagen no debe superar los 4MB para poder subirla a Vercel.', 'warning');
+            }
+
+            const formData = new FormData(e.target);
 
             try {
                 const response = await fetch('/api/cats/admin/nuevo-gato', {
