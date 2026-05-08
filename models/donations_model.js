@@ -3,7 +3,7 @@ const pool = require('../config/db');
 const donationModel = {
     createDonation(id_user, amount, payment_method, donation_date){
         return new Promise((resolve, reject) => {
-            pool.query('INSERT INTO donations (id_user, amount, payment_method, donation_date) VALUES ($1, $2, $3, $4) RETURNING *', [id_user, amount, payment_method, donation_date], (error, results) => {
+            pool.query('INSERT INTO donations (id_user, amount, payment_method, donation_date) VALUES ($1, $2, $3, $4) RETURNING *', [id_user, amount, payment_method, donation_date || new Date().toISOString()], (error, results) => {
                 if (error) {
                     reject(error);
                 } else {

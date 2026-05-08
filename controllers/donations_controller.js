@@ -27,7 +27,7 @@ const donationController = {
                 });
             }
 
-            const nuevaDonacion = await donation.createDonation(id_user, amount, payment_method);
+            const nuevaDonacion = await donation.createDonation(id_user, amount, payment_method, new Date().toISOString());
             res.status(201).json({
                 message: "Donación registrada exitosamente",
                 donacion: nuevaDonacion,
