@@ -158,7 +158,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 allAdoptables = disponibles.map(g => ({
                     id: g.id_cat,
                     name: g.name,
-                    age: g.age + (g.age === 1 ? ' año' : ' años'),
+                    age: g.age,
                     desc: g.description,
                     img: g.img_url,
                     type: 'cat'
@@ -231,6 +231,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             e.preventDefault();
             const catName = document.getElementById('catName').value;
             const catAge = document.getElementById('catAge') ? document.getElementById('catAge').value : 0;
+            const catAgeType = document.getElementById('catAge2') ? document.getElementById('catAge2').value : 'meses';
+            const catAgeFinal = "" + catAge + " " + catAgeType;
             const catDescription = document.getElementById('catDescription') ? document.getElementById('catDescription').value : '';
             const finalOwnerName = ownerName.value || 'Amigo/a';
             const catPhotoFile = document.getElementById('catPhotoFile') ? document.getElementById('catPhotoFile').files[0] : null;
@@ -246,14 +248,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             if (catPhotoFile.size > 4 * 1024 * 1024) {
-                Swal.fire('Foto muy pesada', 'La imagen no debe superar los 4MB para poder subirla a Vercel.', 'warning');
+                Swal.fire('Foto muy pesada', 'La imagen no debe superar los 4MB para poder subirla al servidor', 'warning');
                 return;
             }
 
             const formData = new FormData();
             formData.append('id_user', currentUserId);
             formData.append('cat_name', catName);
-            formData.append('cat_age', catAge);
+            formData.append('cat_age', catAgeFinal);
             formData.append('cat_description', catDescription);
             formData.append('foto-gato', catPhotoFile);
 

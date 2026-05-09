@@ -9,18 +9,28 @@ const cat_routes = require('./routes/cat_routes');
 const adoption_routes = require('./routes/adoption_routes');
 const rehome_routes = require('./routes/rehome_routes');
 const donations_routes = require('./routes/donations_routes');
+const rateLimit = require('express-rate-limit');
+
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, 
+    max: 100,
+    message: "Demasiadas solicitudes desde esta IP, por favor inténtalo de nuevo después de 15 minutos",
+    standardHeaders: true,
+    legacyHeaders: false,
+});
 
 app.use(cors());
+app.use(limiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
-app.set('trust proxy', 1); // Confiar en el proxy de Vercel
+app.set('trust proxy', 1); 
 app.use(session({
     secret: 'secret-key',
-    resave: true, // Forzar el guardado para mejorar persistencia en serverless
+    resave: true, 
     saveUninitialized: false,
     cookie: { 
-        secure: process.env.NODE_ENV === 'production', // Solo HTTPS en producción
+        secure: process.env.NODE_ENV === 'production', 
         maxAge: 24 * 60 * 60 * 1000,
         sameSite: 'lax'
     }
@@ -75,24 +85,24 @@ app.get('/supports', isAdmin, (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 
-// Iniciamos el servidor solo si no estamos en el entorno de Vercel
+
 if (!process.env.VERCEL) {
     const server = app.listen(PORT, () => {
         console.log(`
         ====================================================
-        🚀 SERVIDOR LOCAL INICIADO
-        📦 Puerto: ${PORT}
-        🔗 URL: http://localhost:${PORT}
+        SERVIDOR LOCAL INICIADO
+        Puerto: ${PORT}
+        URL: http://localhost:${PORT}
         ====================================================
         `);
     });
 
     server.on('error', (error) => {
         if (error.code === 'EADDRINUSE') {
-            console.error(`❌ ERROR: El puerto ${PORT} ya está siendo usado.`);
+            console.error(` ERROR: El puerto ${PORT} ya está siendo usado.`);
             process.exit(1);
         } else {
-            console.error('❌ Error al iniciar el servidor:', error);
+            console.error(' Error al iniciar el servidor:', error);
         }
     });
 }

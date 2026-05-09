@@ -34,8 +34,13 @@
                     <input type="text" id="name" name="name" required>
                 </div>
                 <div class="form-group">
-                    <label for="age">Edad (Meses)</label>
+                    <label for="age">Edad</label>
                     <input type="number" id="age" name="age" required>
+                    <br>
+                    <select name="typeAge" id="typeAge">
+                        <option value="meses">Meses</option>
+                        <option value="años">Años</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="description">Descripción</label>
@@ -55,12 +60,20 @@
         document.getElementById('registerCatForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const catPhotoFile = document.getElementById('foto-gato').files[0];
+            const catAge = document.getElementById('age').value;
+            const catAgeType = document.getElementById('typeAge').value;
+            const catAgeFinal = "" + catAge + " " + catAgeType;
 
             if (catPhotoFile && catPhotoFile.size > 4 * 1024 * 1024) {
-                return Swal.fire('Foto muy pesada', 'La imagen no debe superar los 4MB para poder subirla a Vercel.', 'warning');
+                return Swal.fire('Foto muy pesada', 'La imagen no debe superar los 4MB para poder subirla al servidor', 'warning');
             }
 
-            const formData = new FormData(e.target);
+            const formData = new FormData();
+            formData.append('name', document.getElementById('name').value);
+            formData.append('age', catAgeFinal);
+            formData.append('description', document.getElementById('description').value);
+            formData.append('foto-gato', catPhotoFile);
+            
 
             try {
                 const response = await fetch('/api/cats/admin/nuevo-gato', {

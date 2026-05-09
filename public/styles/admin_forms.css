@@ -30,3 +30,17 @@
     font-family: 'Nunito', sans-serif; 
     box-sizing: border-box; 
 }
+
+.form-group select { 
+    width: 100%; 
+    padding: 10px; 
+    border: 1px solid #ccc; 
+    border-radius: 8px; 
+    font-family: 'Nunito', sans-serif; 
+    box-sizing: border-box; 
+}
+
+.form-group select option { 
+    padding: 10px; 
+    font-family: 'Nunito', sans-serif; 
+}

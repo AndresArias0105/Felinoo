@@ -84,12 +84,16 @@ const userController = {
             const { username, password } = req.body;
             const userData = await user.userLogin(username);
             if (!userData) {
-                return res.status(401).json({ message: "Credenciales inválidas" });
+                return res.status(401).json({ message: "Usuario no encontrado" });
             }
             const isPasswordValid = await comparePassword(password, userData.password_hash || userData.password);
             if (!isPasswordValid) {
                 return res.status(401).json({ message: "Credenciales inválidas" });
             }
+            if (!req.session) {
+                return res.status(500).json({ message: "Error al iniciar sesión: No se pudo crear la sesión" });
+            }
+            
             req.session.id_empleado = userData.id_user || userData.id;
             req.session.rol = userData.role || userData.rol;
             req.session.user_id = userData.id_user || userData.id;

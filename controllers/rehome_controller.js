@@ -26,6 +26,15 @@ const rehomeController = {
             if (!img_url) {
                 return res.status(400).json({ message: "La imagen del gatito es obligatoria" });
             }
+
+            if (!id_user || !cat_name || !cat_age || !cat_description) {
+                return res.status(400).json({ message: "Faltan campos obligatorios para crear el rehome" });
+            }
+
+            if (isNaN(cat_age) || cat_age < 0) {
+                return res.status(400).json({ message: "Edad del gatito inválida" });
+            }
+            
             const nuevoRehome = await rehome.createRehomeRequest(id_user, cat_name, cat_age, cat_description, img_url);
             res.status(201).json({
                 message: "Rehome creado exitosamente",

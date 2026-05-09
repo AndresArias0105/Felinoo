@@ -28,8 +28,15 @@ const catController = {
                 return res.status(400).json({ message: "Error al crear gato: Imagen no subida" });
             }
 
-            const ageInt = parseInt(age) || 0;
-            const newGato = await cat.createCat(name, ageInt, description, img_url);
+            if (!name || !age || !description) {
+                return res.status(400).json({ message: "Error al crear gato: Faltan campos obligatorios" });
+            }
+
+            if (isNaN(age) || age < 0) {
+                return res.status(400).json({ message: "Error al crear gato: Edad inválida" });
+            }
+
+            const newGato = await cat.createCat(name, age, description, img_url);
 
             res.status(201).json({
                 message: "Gato creado exitosamente",
@@ -74,11 +81,22 @@ const catController = {
             const img_url = req.file ? req.file.path : null;
             const ageInt = parseInt(age) || 0;
 
+            if (!name || !age || !description) {
+                return res.status(400).json({ message: "Error al actualizar gato: Faltan campos obligatorios" });
+            }
+
+            if (isNaN(ageInt) || ageInt < 0) {
+                return res.status(400).json({ message: "Error al actualizar gato: Edad inválida" });
+            }
+
             const updatedGato = await cat.updateCat(id, name, ageInt, description, img_url);
 
             if (!updatedGato) {
                 return res.status(404).json({ message: "Gato no encontrado" });
             }
+
+
+
             res.status(200).json({
                 message: "Gato actualizado exitosamente",
                 gato: updatedGato,

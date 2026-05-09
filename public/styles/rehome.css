@@ -82,6 +82,15 @@
     margin-bottom: 1.2rem;
 }
 
+.form-car-section select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-family: 'Nunito', sans-serif;
+    box-sizing: border-box;
+}
+
 .file-input {
     margin-bottom: 10px;
     width: 100%;
