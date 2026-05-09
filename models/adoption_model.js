@@ -7,10 +7,12 @@ const adoptionRequestModel = {
                 SELECT 
                     ar.*, 
                     u.fullname AS user_name, 
-                    c.name AS cat_name 
+                    c.name AS cat_name,
+                    c.estado AS cat_estado
                 FROM adoption_requests ar
                 LEFT JOIN users u ON ar.id_user = u.id_user
                 LEFT JOIN cats c ON ar.id_cat = c.id_cat
+                WHERE c.estado <> 'adoptado' and ar.estado = 'pendiente'
                 ORDER BY ar.id_request DESC
             `;
             pool.query(query, (error, results) => {
@@ -42,6 +44,15 @@ const adoptionRequestModel = {
                 if (selRes.rows.length === 0) return reject(new Error("Request not found"));
                 
                 const request = selRes.rows[0];
+                id_cat = request.id_cat;
+                pool.query('SELECT * FROM cats WHERE id_cat = $1', [id_cat], (err2, selRes2) => {
+                    if (err2) return reject(err2);
+                    if (selRes2.rows.length === 0) return reject(new Error("Cat not found"));
+                    const cat = selRes2.rows[0];
+                    if(cat.estado == 'adoptado') return reject(new Error("Cat is already adopted"));
+                }); 
+
+                if(request.estado == 'pendiente') return reject(new Error("Request not found"));
                 
                 pool.query('UPDATE cats SET estado = $1 WHERE id_cat = $2', ['adoptado', request.id_cat], (err2) => {
                     if (err2) return reject(err2);
