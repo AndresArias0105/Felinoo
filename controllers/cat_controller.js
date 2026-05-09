@@ -32,10 +32,6 @@ const catController = {
                 return res.status(400).json({ message: "Error al crear gato: Faltan campos obligatorios" });
             }
 
-            if (isNaN(age) || age < 0) {
-                return res.status(400).json({ message: "Error al crear gato: Edad inválida" });
-            }
-
             const newGato = await cat.createCat(name, age, description, img_url);
 
             res.status(201).json({
@@ -46,9 +42,9 @@ const catController = {
         catch (error) {
             console.error("=== ERROR CRÍTICO EN EL SERVIDOR ===");
             console.dir(error);
-            return res.status(500).json({ 
-                message: "Error interno del servidor", 
-                details: error.message || error 
+            return res.status(500).json({
+                message: "Error interno del servidor",
+                details: error.message || error
             });
         };
     },
